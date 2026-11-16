@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>D&D трекер</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <h1>Энкаунтеры</h1>
+
+  <form method="post" action="/encounters">
+    <input type="text" name="name" placeholder="Название боя" required>
+    <button type="submit">Создать</button>
+  </form>
+
+   <ul>
+    {% for enc in encounters %}
+      <li class="clickable" data-url="/encounters/{{ enc['id'] }}">
+        {{ enc['name'] }} — раунд {{ enc['round'] }}
+        <a href="/encounters/{{ enc['id'] }}" target="_blank">
+          <button type="button" onclick="event.stopPropagation()">Открыть</button>
+        </a>
+        <form method="post" action="/encounters/{{ enc['id'] }}/delete"
+              style="display:inline" onsubmit="return confirm('Удалить этот энкаунтер?')">
+          <button type="submit" class="danger" onclick="event.stopPropagation()">Удалить</button>
+        </form>
+      </li>
+    {% else %}
+      <li>Пока нет ни одного боя</li>
+    {% endfor %}
+  </ul>
+
+  <script>
+  document.querySelectorAll("li.clickable").forEach(function (li) {
+    li.addEventListener("click", function () {
+      window.open(li.dataset.url, "_blank");
+    });
+  });
+  </script>
+  
+</body>
+</html>

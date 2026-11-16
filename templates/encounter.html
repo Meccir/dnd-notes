@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>{{ enc['name'] }}</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <h1>{{ enc['name'] }}</h1>
+  <p>Раунд {{ enc['round'] }}</p>
+
+  <h2>Участники</h2>
+  <ul>
+    {% for c in combatants %}
+      <li>
+        <strong>{{ c['initiative'] }}</strong> —
+        {{ c['name'] }}
+        ({{ c['hp'] }}/{{ c['max_hp'] }})
+        {% if c['side'] == 'party' %}[герой]{% else %}[враг]{% endif %}
+      </li>
+    {% else %}
+      <li>Участников пока нет</li>
+    {% endfor %}
+  </ul>
+
+  <h2>Добавить участника</h2>
+  <form method="post" action="/encounters/{{ enc['id'] }}/combatants">
+    <input type="text" name="name" placeholder="Имя" required>
+    <input type="number" name="initiative" placeholder="Инициатива" required>
+    <input type="number" name="hp" placeholder="HP" required>
+    <select name="side">
+      <option value="party">Герой</option>
+      <option value="enemy">Враг</option>
+    </select>
+    <button type="submit">Добавить</button>
+  </form>
+</body>
+</html>

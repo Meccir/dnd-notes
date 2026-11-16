@@ -14,8 +14,8 @@
       <li class="clickable" data-url="/encounters/{{ enc['id'] }}">
         {{ enc['name'] }} — раунд {{ enc['round'] }}
         <form method="post" action="/encounters/{{ enc['id'] }}/delete"
-              style="display:inline" onsubmit="return confirm('Удалить этот энкаунтер?')">
-          <button type="submit" class="danger" onclick="event.stopPropagation()">Удалить</button>
+              class="delete-form" onsubmit="return confirm('Удалить этот энкаунтер?')">
+          <button type="submit" class="danger delete-button" aria-label="Удалить энкаунтер" title="Удалить" onclick="event.stopPropagation()">×</button>
         </form>
       </li>
     {% else %}

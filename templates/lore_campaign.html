@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}{{ campaign['name'] }} — Лор{% endblock %}
+{% block nav_lore %}active{% endblock %}
+{% block content %}
+  <p><a href="/lore" class="back">← Все кампании лора</a></p>
+  <h1>{{ campaign['name'] }}</h1>
+
+  <section class="lore-card">
+    <h2>Новая карточка</h2>
+    <form method="post" action="/lore/{{ campaign['id'] }}/cards">
+      <div class="lore-card-header">
+        <input class="lore-card-title" type="text" name="title" placeholder="Название карточки" required>
+        <select name="kind" aria-label="Тип карточки">
+          {% for value, label in card_types %}
+            <option value="{{ value }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <textarea name="content" rows="5" placeholder="Описание"></textarea>
+      <button type="submit">Добавить карточку</button>
+    </form>
+  </section>
+
+  <h2>Карточки</h2>
+  {% for card in cards %}
+    <article class="lore-card">
+      <form method="post" action="/lore/{{ campaign['id'] }}/cards/{{ card['id'] }}/save">
+        <div class="lore-card-header">
+          <input class="lore-card-title" type="text" name="title" value="{{ card['title'] }}" required>
+          <select name="kind" aria-label="Тип карточки">
+            {% for value, label in card_types %}
+              <option value="{{ value }}" {% if card['kind'] == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <textarea name="content" rows="5">{{ card['content'] }}</textarea>
+        <div class="actions"><button type="submit">Сохранить</button></div>
+      </form>
+      <form method="post" action="/lore/{{ campaign['id'] }}/cards/{{ card['id'] }}/delete"
+            onsubmit="return confirm('Удалить карточку?')">
+        <button type="submit" class="danger">Удалить карточку</button>
+      </form>
+    </article>
+  {% else %}
+    <p>В этой кампании пока нет карточек.</p>
+  {% endfor %}
+{% endblock %}

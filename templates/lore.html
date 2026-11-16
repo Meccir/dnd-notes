@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Лор — D&D трекер{% endblock %}
+{% block nav_lore %}active{% endblock %}
+{% block content %}
+  <h1>Лор</h1>
+  <p>Создавай кампании и храни в них персонажей, места и общие описания.</p>
+
+  <form method="post" action="/lore">
+    <input type="text" name="name" placeholder="Название кампании лора" required>
+    <button type="submit">Создать кампанию</button>
+  </form>
+
+  <ul>
+    {% for lore_campaign in campaigns %}
+      <li class="lore-campaign-item">
+        <form method="post" action="/lore/{{ lore_campaign['id'] }}/delete"
+              onsubmit="return confirm('Удалить кампанию лора и все её карточки?')">
+          <button type="submit" class="danger delete-button" aria-label="Удалить кампанию лора" title="Удалить">×</button>
+        </form>
+        <a class="lore-campaign-link" href="/lore/{{ lore_campaign['id'] }}">{{ lore_campaign['name'] }}</a>
+      </li>
+    {% else %}
+      <li>Пока нет кампаний лора</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

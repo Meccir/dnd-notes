@@ -8,6 +8,31 @@ app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+CARD_TYPES = {
+    "character": "Персонаж",
+    "place": "Место",
+    "description": "Общее описание",
+}
+
+
+@app.on_event("startup")
+def create_lore_tables():
+    with get_conn() as conn:
+        conn.execute(
+            "create table if not exists lore_campaigns ("
+            "id uuid primary key default gen_random_uuid(), "
+            "name text not null, created_at timestamptz not null default now())"
+        )
+        conn.execute(
+            "create table if not exists lore_cards ("
+            "id uuid primary key default gen_random_uuid(), "
+            "campaign_id uuid not null references lore_campaigns(id) on delete cascade, "
+            "kind text not null check (kind in ('character', 'place', 'description')), "
+            "title text not null, content text not null default '', "
+            "created_at timestamptz not null default now())"
+        )
+        conn.commit()
+
 
 # Главная: список энкаунтеров
 @app.get("/", response_class=HTMLResponse)
@@ -129,3 +154,105 @@ def delete_campaign(camp_id: str):
         conn.execute("delete from campaigns where id = %s", (camp_id,))
         conn.commit()
     return RedirectResponse("/campaigns", status_code=303)
+
+
+# --- Лор ---
+
+@app.get("/lore", response_class=HTMLResponse)
+def lore_list(request: Request):
+    with get_conn() as conn:
+        rows = conn.execute(
+            "select id, name from lore_campaigns order by created_at desc"
+        ).fetchall()
+    return templates.TemplateResponse(request, "lore.html", {"campaigns": rows})
+
+
+@app.post("/lore")
+def create_lore_campaign(name: str = Form(...)):
+    name = name.strip()
+    if not name:
+        raise HTTPException(status_code=400, detail="Укажи название кампании")
+    with get_conn() as conn:
+        conn.execute("insert into lore_campaigns (name) values (%s)", (name,))
+        conn.commit()
+    return RedirectResponse("/lore", status_code=303)
+
+
+@app.post("/lore/{campaign_id}/delete")
+def delete_lore_campaign(campaign_id: str):
+    with get_conn() as conn:
+        conn.execute("delete from lore_campaigns where id = %s", (campaign_id,))
+        conn.commit()
+    return RedirectResponse("/lore", status_code=303)
+
+
+@app.get("/lore/{campaign_id}", response_class=HTMLResponse)
+def lore_campaign_page(request: Request, campaign_id: str):
+    with get_conn() as conn:
+        campaign = conn.execute(
+            "select id, name from lore_campaigns where id = %s", (campaign_id,)
+        ).fetchone()
+        if campaign is None:
+            raise HTTPException(status_code=404, detail="Кампания лора не найдена")
+        cards = conn.execute(
+            "select id, kind, title, content from lore_cards "
+            "where campaign_id = %s order by created_at",
+            (campaign_id,),
+        ).fetchall()
+    return templates.TemplateResponse(request, "lore_campaign.html", {
+        "campaign": campaign,
+        "cards": cards,
+        "card_types": list(CARD_TYPES.items()),
+    })
+
+
+@app.post("/lore/{campaign_id}/cards")
+def create_lore_card(campaign_id: str, title: str = Form(...),
+                     kind: str = Form(...), content: str = Form("")):
+    title = title.strip()
+    if not title:
+        raise HTTPException(status_code=400, detail="Укажи название карточки")
+    if kind not in CARD_TYPES:
+        raise HTTPException(status_code=400, detail="Неизвестный тип карточки")
+    with get_conn() as conn:
+        campaign = conn.execute(
+            "select id from lore_campaigns where id = %s", (campaign_id,)
+        ).fetchone()
+        if campaign is None:
+            raise HTTPException(status_code=404, detail="Кампания лора не найдена")
+        conn.execute(
+            "insert into lore_cards (campaign_id, kind, title, content) "
+            "values (%s, %s, %s, %s)", (campaign_id, kind, title, content)
+        )
+        conn.commit()
+    return RedirectResponse(f"/lore/{campaign_id}", status_code=303)
+
+
+@app.post("/lore/{campaign_id}/cards/{card_id}/save")
+def save_lore_card(campaign_id: str, card_id: str,
+                   title: str = Form(...), kind: str = Form(...),
+                   content: str = Form("")):
+    title = title.strip()
+    if not title:
+        raise HTTPException(status_code=400, detail="Укажи название карточки")
+    if kind not in CARD_TYPES:
+        raise HTTPException(status_code=400, detail="Неизвестный тип карточки")
+    with get_conn() as conn:
+        conn.execute(
+            "update lore_cards set title = %s, kind = %s, content = %s "
+            "where id = %s and campaign_id = %s",
+            (title, kind, content, card_id, campaign_id),
+        )
+        conn.commit()
+    return RedirectResponse(f"/lore/{campaign_id}", status_code=303)
+
+
+@app.post("/lore/{campaign_id}/cards/{card_id}/delete")
+def delete_lore_card(campaign_id: str, card_id: str):
+    with get_conn() as conn:
+        conn.execute(
+            "delete from lore_cards where id = %s and campaign_id = %s",
+            (card_id, campaign_id),
+        )
+        conn.commit()
+    return RedirectResponse(f"/lore/{campaign_id}", status_code=303)

@@ -69,6 +69,22 @@ button.danger:hover {
   background: #7a2c2c;
 }
 
+.delete-form {
+  float: right;
+  margin-left: 8px;
+}
+
+button.delete-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  font-size: 18px;
+  line-height: 1;
+}
+
 li a {
   text-decoration: none;
 }
@@ -156,6 +172,52 @@ a.back {
 
 a.back:hover {
   color: #e6e6ea;
+}
+
+.lore-campaign-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lore-campaign-link {
+  color: #e6e6ea;
+  text-decoration: none;
+  flex: 1;
+}
+
+.lore-card {
+  background: #26262e;
+  border: 1px solid #3a3a44;
+  border-radius: 8px;
+  padding: 14px;
+  margin: 16px 0;
+}
+
+.lore-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.lore-card-title,
+.lore-card select {
+  box-sizing: border-box;
+  background: #2a2a32;
+  border: 1px solid #4a4a56;
+  color: #e6e6ea;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+.lore-card-title {
+  flex: 1;
+}
+
+.lore-card textarea {
+  margin-bottom: 8px;
 }
 
 .actions {

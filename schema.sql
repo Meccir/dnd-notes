@@ -26,3 +26,21 @@ create table if not exists campaigns (
   notes text not null default '',
   created_at timestamptz not null default now()
 );
+
+-- Отдельные кампании лора и карточки справочника
+create table if not exists lore_campaigns (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists lore_cards (
+  id uuid primary key default gen_random_uuid(),
+  campaign_id uuid not null references lore_campaigns(id) on delete cascade,
+  kind text not null check (kind in ('character', 'place', 'description')),
+  title text not null,
+  content text not null default '',
+  created_at timestamptz not null default now()
+);
+
+create index if not exists lore_cards_campaign_idx on lore_cards(campaign_id);

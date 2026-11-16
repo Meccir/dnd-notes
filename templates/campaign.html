@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}{{ camp['name'] }} — D&D трекер{% endblock %}
+{% block nav_campaigns %}active{% endblock %}
+{% block content %}
+  <p><a href="/campaigns" class="back">← Все партии</a></p>
+  <h1>{{ camp['name'] }}</h1>
+
+  <form method="post" action="/campaigns/{{ camp['id'] }}/save" id="save-form">
+    <input type="text" name="name" value="{{ camp['name'] }}" required class="title-input">
+    <textarea name="notes" rows="16"
+      placeholder="Заметки по кампании: NPC, зацепки, долги, тайны, что произошло на прошлой сессии…">{{ camp['notes'] }}</textarea>
+    <div class="actions">
+      <button type="submit">Сохранить</button>
+      <span class="hint">или Ctrl+S</span>
+    </div>
+  </form>
+
+  <form method="post" action="/campaigns/{{ camp['id'] }}/delete"
+        onsubmit="return confirm('Удалить партию и все её заметки?')">
+    <button type="submit" class="danger">Удалить партию</button>
+  </form>
+
+  <script>
+  document.addEventListener("keydown", function (e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+      e.preventDefault();
+      document.getElementById("save-form").requestSubmit();
+    }
+  });
+  </script>
+{% endblock %}

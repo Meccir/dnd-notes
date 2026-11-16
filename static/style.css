@@ -80,3 +80,81 @@ li.clickable {
 li.clickable:hover {
   border-color: #8a6cff;
 }
+
+/* Вкладки */
+nav.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #3a3a44;
+}
+
+nav.tabs a {
+  color: #9a9aa6;
+  text-decoration: none;
+  padding: 8px 14px;
+  border-bottom: 2px solid transparent;
+  font-size: 16px;
+}
+
+nav.tabs a:hover {
+  color: #e6e6ea;
+}
+
+nav.tabs a.active {
+  color: #e6e6ea;
+  border-bottom-color: #8a6cff;
+}
+
+/* Заметки партии */
+textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: #2a2a32;
+  border: 1px solid #4a4a56;
+  color: #e6e6ea;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 15px;
+  font-family: inherit;
+  line-height: 1.5;
+  resize: vertical;
+  margin: 12px 0;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: #8a6cff;
+}
+
+input.title-input {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 18px;
+}
+
+.preview {
+  color: #9a9aa6;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+a.back {
+  color: #9a9aa6;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+a.back:hover {
+  color: #e6e6ea;
+}
+
+.actions {
+  margin-bottom: 16px;
+}
+
+.hint {
+  color: #9a9aa6;
+  font-size: 13px;
+  margin-left: 8px;
+}

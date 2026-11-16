@@ -18,3 +18,11 @@ create table if not exists combatants (
 );
 
 create index if not exists combatants_encounter_idx on combatants(encounter_id);
+
+-- Партии (кампании): список и заметки
+create table if not exists campaigns (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  notes text not null default '',
+  created_at timestamptz not null default now()
+);

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}D&D трекер{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <nav class="tabs">
+    <a href="/" class="{% block nav_encounters %}{% endblock %}">Энкаунтеры</a>
+    <a href="/campaigns" class="{% block nav_campaigns %}{% endblock %}">Партии</a>
+  </nav>
+  {% block content %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Партии — D&D трекер{% endblock %}
+{% block nav_campaigns %}active{% endblock %}
+{% block content %}
+  <h1>Партии</h1>
+
+  <form method="post" action="/campaigns">
+    <input type="text" name="name" placeholder="Название кампании" required>
+    <button type="submit">Создать</button>
+  </form>
+
+  <ul>
+    {% for c in campaigns %}
+      <li class="clickable" data-url="/campaigns/{{ c['id'] }}">
+        {{ c['name'] }}
+        {% if c['notes'] %}
+          <div class="preview">{{ c['notes'][:80] }}{% if c['notes']|length > 80 %}…{% endif %}</div>
+        {% endif %}
+        <a href="/campaigns/{{ c['id'] }}">
+          <button type="button" onclick="event.stopPropagation()">Открыть</button>
+        </a>
+        <form method="post" action="/campaigns/{{ c['id'] }}/delete"
+              style="display:inline" onsubmit="return confirm('Удалить партию и все её заметки?')">
+          <button type="submit" class="danger" onclick="event.stopPropagation()">Удалить</button>
+        </form>
+      </li>
+    {% else %}
+      <li>Пока нет ни одной партии</li>
+    {% endfor %}
+  </ul>
+
+  <script>
+  document.querySelectorAll("li.clickable").forEach(function (li) {
+    li.addEventListener("click", function () {
+      window.location = li.dataset.url;
+    });
+  });
+  </script>
+{% endblock %}

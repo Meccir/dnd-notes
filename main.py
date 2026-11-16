@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Form
+from fastapi import FastAPI, Request, Form, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -71,3 +71,61 @@ def add_combatant(enc_id: str, name: str = Form(...),
         )
         conn.commit()
     return RedirectResponse(f"/encounters/{enc_id}", status_code=303)
+
+
+# --- Партии (кампании) ---
+
+# Список партий
+@app.get("/campaigns", response_class=HTMLResponse)
+def campaigns_list(request: Request):
+    with get_conn() as conn:
+        rows = conn.execute(
+            "select id, name, notes, created_at from campaigns order by created_at desc"
+        ).fetchall()
+    return templates.TemplateResponse(request, "campaigns.html", {
+        "campaigns": rows,
+    })
+
+
+# Создание партии
+@app.post("/campaigns")
+def create_campaign(name: str = Form(...)):
+    with get_conn() as conn:
+        conn.execute("insert into campaigns (name) values (%s)", (name,))
+        conn.commit()
+    return RedirectResponse("/campaigns", status_code=303)
+
+
+# Страница партии с заметками
+@app.get("/campaigns/{camp_id}", response_class=HTMLResponse)
+def campaign_page(request: Request, camp_id: str):
+    with get_conn() as conn:
+        camp = conn.execute(
+            "select id, name, notes from campaigns where id = %s", (camp_id,)
+        ).fetchone()
+    if camp is None:
+        raise HTTPException(status_code=404, detail="Партия не найдена")
+    return templates.TemplateResponse(request, "campaign.html", {
+        "camp": camp,
+    })
+
+
+# Сохранение названия и заметок
+@app.post("/campaigns/{camp_id}/save")
+def save_campaign(camp_id: str, name: str = Form(...), notes: str = Form("")):
+    with get_conn() as conn:
+        conn.execute(
+            "update campaigns set name = %s, notes = %s where id = %s",
+            (name, notes, camp_id),
+        )
+        conn.commit()
+    return RedirectResponse(f"/campaigns/{camp_id}", status_code=303)
+
+
+# Удаление партии
+@app.post("/campaigns/{camp_id}/delete")
+def delete_campaign(camp_id: str):
+    with get_conn() as conn:
+        conn.execute("delete from campaigns where id = %s", (camp_id,))
+        conn.commit()
+    return RedirectResponse("/campaigns", status_code=303)

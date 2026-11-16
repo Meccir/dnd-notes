@@ -13,9 +13,6 @@
     {% for enc in encounters %}
       <li class="clickable" data-url="/encounters/{{ enc['id'] }}">
         {{ enc['name'] }} — раунд {{ enc['round'] }}
-        <a href="/encounters/{{ enc['id'] }}" target="_blank">
-          <button type="button" onclick="event.stopPropagation()">Открыть</button>
-        </a>
         <form method="post" action="/encounters/{{ enc['id'] }}/delete"
               style="display:inline" onsubmit="return confirm('Удалить этот энкаунтер?')">
           <button type="submit" class="danger" onclick="event.stopPropagation()">Удалить</button>

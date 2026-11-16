@@ -16,9 +16,6 @@
         {% if c['notes'] %}
           <div class="preview">{{ c['notes'][:80] }}{% if c['notes']|length > 80 %}…{% endif %}</div>
         {% endif %}
-        <a href="/campaigns/{{ c['id'] }}">
-          <button type="button" onclick="event.stopPropagation()">Открыть</button>
-        </a>
         <form method="post" action="/campaigns/{{ c['id'] }}/delete"
               style="display:inline" onsubmit="return confirm('Удалить партию и все её заметки?')">
           <button type="submit" class="danger" onclick="event.stopPropagation()">Удалить</button>

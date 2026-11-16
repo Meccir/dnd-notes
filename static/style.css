@@ -84,26 +84,35 @@ li.clickable:hover {
 /* Вкладки */
 nav.tabs {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   margin-bottom: 24px;
-  border-bottom: 1px solid #3a3a44;
+  padding: 0 8px;
+  border-bottom: 1px solid #4a4a56;
 }
 
 nav.tabs a {
+  padding: 9px 20px;
   color: #9a9aa6;
   text-decoration: none;
-  padding: 8px 14px;
-  border-bottom: 2px solid transparent;
-  font-size: 16px;
+  font-size: 15px;
+  border: 1px solid transparent;
+  border-top-width: 2px;
+  border-bottom: none;
+  border-radius: 9px 9px 0 0;
+  margin-bottom: -1px;
 }
 
 nav.tabs a:hover {
   color: #e6e6ea;
+  background: #26262e;
 }
 
 nav.tabs a.active {
   color: #e6e6ea;
-  border-bottom-color: #8a6cff;
+  background: #26262e;
+  border-color: #4a4a56;
+  border-top-color: #8a6cff;
+  border-bottom: 1px solid #26262e;
 }
 
 /* Заметки партии */
